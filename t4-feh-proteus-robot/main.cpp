@@ -65,8 +65,8 @@ void calibrateServo() {
 void DriveForwardUntilHitWall(int left_motor_percent, int right_motor_percent)
 {
     //Turn both motors on at given percent motor power.
-    leftMotor.SetPercent(motor_percent);
-    rightMotor.SetPercent(motor_percent);
+    leftMotor.SetPercent(left_motor_percent);
+    rightMotor.SetPercent(right_motor_percent);
 
     // Psuedo-infinite loop to burn time while both switches are not pressed.
     // Note that bump switches are "true" when not pressed and "false" when pressed
@@ -127,7 +127,9 @@ void moveServoToLight() {
     // Runs continuously
     while(true) {
         //Print the value of the CdS cell to the screen.
-        LCD.WriteLine("Voltage from CDS cell: " + cdsCell.Value() + "Volts");
+        LCD.Write("Voltage from CDS cell: ");
+        LCD.Write(cdsCell.Value());
+        LCD.Write("Volts");
 
         // Set the servo arm depending on the amount of light from the CDS cell
         // 0 light corresponds to 0 degress and full light to 180 degrees
@@ -157,18 +159,22 @@ void detectBlueLight() {
 void navigateExploration1Course() {
 
     double OFFSET_TO_DRIVE_STRAIGHT = 1.5;
+    int QUARTER_POWER_PERCENT = 25;
 
-    DriveForwardUntilHitWall(QUARTER_POWER, QUARTER_POWER - OFFSET_TO_DRIVE_STRAIGHT);
+    DriveForwardUntilHitWall(QUARTER_POWER_PERCENT, QUARTER_POWER_PERCENT - OFFSET_TO_DRIVE_STRAIGHT);
     BackLeftTurnUntilHitWall();
-    DriveForwardUntilHitWall(QUARTER_POWER, QUARTER_POWER - OFFSET_TO_DRIVE_STRAIGHT);
+    DriveForwardUntilHitWall(QUARTER_POWER_PERCENT, QUARTER_POWER_PERCENT - OFFSET_TO_DRIVE_STRAIGHT);
     BackRightTurnUntilCornerHitWall();
-    DriveForwardUntilHitWall(QUARTER_POWER, QUARTER_POWER - OFFSET_TO_DRIVE_STRAIGHT);
+    DriveForwardUntilHitWall(QUARTER_POWER_PERCENT, QUARTER_POWER_PERCENT - OFFSET_TO_DRIVE_STRAIGHT);
 }
 
 
 // MAIN FUNCTION
 int main(void)
 {
+    // Consider calling servo.TouchCalibrate(); if this is the first run with servos
+
+    // Navigates the exploration 1 course
     navigateExploration1Course();
 
     // Just a conventional best practice
