@@ -70,11 +70,11 @@ void DriveForwardUntilHitWall(int left_motor_percent, int right_motor_percent)
 
     // Psuedo-infinite loop to burn time while both switches are not pressed.
     // Note that bump switches are "true" when not pressed and "false" when pressed
-    while (frontLeftBump || frontRightBump);
+    while (frontLeftBump.Value() == 1 || frontRightBump.Value() == 1) { }
 
     // Stops motors
-    leftMotor.stop();
-    rightMotor.stop();
+    leftMotor.Stop();
+    rightMotor.Stop();
 }
 
 // TODO: Fine-tune for each motor setup
@@ -82,16 +82,16 @@ void DriveForwardUntilHitWall(int left_motor_percent, int right_motor_percent)
 void BackLeftTurnUntilHitWall()
 {
     // Set both motors to a low power level
-    leftMotor.SetPercent(10);
-    rightMotor.SetPercent(25);
+    leftMotor.SetPercent(-10);
+    rightMotor.SetPercent(-25);
 
     // Psuedo-infinite loop to burn time while both switches are not pressed.
     // Note that bump switches are "true" when not pressed and "false" when pressed
-    while (backLeftBump || backRightBump);
+    while (backLeftBump.Value() == 1 || backRightBump.Value() == 1) { }
 
     // Stops motors
-    leftMotor.stop();
-    rightMotor.stop();
+    leftMotor.Stop();
+    rightMotor.Stop();
 }
 
 // TODO: Fine-tune for each motor setup
@@ -99,24 +99,24 @@ void BackLeftTurnUntilHitWall()
 void BackRightTurnUntilCornerHitWall()
 {
     // Set both motors to a low power level
-    leftMotor.SetPercent(25);
-    rightMotor.SetPercent(10);
+    leftMotor.SetPercent(-50);
+    rightMotor.SetPercent(-10);
 
     // Psuedo-infinite loop to burn time while one switch is not pressed.
     // Note that bump switches are "true" when not pressed and "false" when pressed
-    while (backLeftBump && backRightBump);
-
-    // Stops right motor
-    rightMotor.stop();
-
-    // Accellerates the left motor to complete the turn
-    leftMotor.setPercent(50);
-
-    // Allows the left motor to run for a few tenths of a second
-    Sleep(0.2);
+    while (backLeftBump.Value() == 1 && backRightBump.Value() == 1) { }
 
     // Stops left motor
-    leftMotor.stop();
+    leftMotor.Stop();
+
+    // Drives the right motor forward to make the robot square in the course
+    rightMotor.SetPercent(25);
+
+    // Allows the right motor to run for 2 tenths of a second
+    Sleep(0.2);
+
+    // Stops right motor
+    rightMotor.Stop();
 }
 
 
@@ -152,14 +152,17 @@ void detectBlueLight() {
 
 // COMBINATION FUNCTIONS
 
+// TODO: Recalibrate offset for new motor setup
 // Uses functions written above to navigate the Exploration 1 course
 void navigateExploration1Course() {
 
-    DriveForwardUntilHitWall(QUARTER_POWER, QUARTER_POWER);
+    double OFFSET_TO_DRIVE_STRAIGHT = 1.5;
+
+    DriveForwardUntilHitWall(QUARTER_POWER, QUARTER_POWER - OFFSET_TO_DRIVE_STRAIGHT);
     BackLeftTurnUntilHitWall();
-    DriveForwardUntilHitWall(QUARTER_POWER, QUARTER_POWER);
+    DriveForwardUntilHitWall(QUARTER_POWER, QUARTER_POWER - OFFSET_TO_DRIVE_STRAIGHT);
     BackRightTurnUntilCornerHitWall();
-    DriveForwardUntilHitWall(QUARTER_POWER, QUARTER_POWER);
+    DriveForwardUntilHitWall(QUARTER_POWER, QUARTER_POWER - OFFSET_TO_DRIVE_STRAIGHT);
 }
 
 
