@@ -60,6 +60,7 @@ void calibrateServo() {
 
 // DRIVE FUNCTIONS
 
+// TODO: Fine-tune for each motor setup
 //Create a function to drive motors forward until microswitch is pressed.
 void DriveForwardUntilHitWall(int left_motor_percent, int right_motor_percent)
 {
@@ -76,6 +77,7 @@ void DriveForwardUntilHitWall(int left_motor_percent, int right_motor_percent)
     rightMotor.stop();
 }
 
+// TODO: Fine-tune for each motor setup
 // Function to reverse the robot to the left until a wall is hit
 void BackLeftTurnUntilHitWall()
 {
@@ -92,6 +94,7 @@ void BackLeftTurnUntilHitWall()
     rightMotor.stop();
 }
 
+// TODO: Fine-tune for each motor setup
 // Function to reverse the robot back to the right until one switch hits a wall
 void BackRightTurnUntilCornerHitWall()
 {
