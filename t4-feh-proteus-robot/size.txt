@@ -1,0 +1,2 @@
+   text	   data	    bss	    dec	    hex	filename
+  35152	   3424	   5612	  44188	   ac9c	../t4-feh-proteus-robot.elf

@@ -8,7 +8,6 @@
 //Include the FEHServo library
 #include <FEHServo.h>
 
-
 // DECLARE GLOBAL CONSTANTS
 
 // SENSORS
@@ -20,6 +19,10 @@ DigitalInputPin frontLeftBump (FEHIO::P3_6);
 DigitalInputPin frontRightBump (FEHIO::P0_1);
 DigitalInputPin backLeftBump (FEHIO::P3_7);
 DigitalInputPin backRightBump (FEHIO::P0_0);
+
+AnalogInputPin leftOptosensor (FEHIO::P2_2);
+AnalogInputPin middleOptosensor (FEHIO::P2_1);
+AnalogInputPin rightOptosensor (FEHIO::P2_0);
 
 //MOTORS
 //Assign the right and left motors to motor ports with a max voltage of 9.0V
@@ -168,14 +171,186 @@ void navigateExploration1Course() {
     DriveForwardUntilHitWall(QUARTER_POWER_PERCENT, QUARTER_POWER_PERCENT - OFFSET_TO_DRIVE_STRAIGHT);
 }
 
+void lineFollowerPrintValues() {
+
+    float trashX, trashY;
+
+    while (true) {
+
+        LCD.WriteLine("Left optosensor voltages: ");
+        for (int i = 0; i < 5; i++) {
+            LCD.WriteLine(leftOptosensor.Value());
+        }
+
+        while (!LCD.Touch(&trashX, &trashY)) {}
+        while (LCD.Touch(&trashX, &trashY)) {}
+
+        LCD.WriteLine("Middle optosensor voltages: ");
+        for (int i = 0; i < 5; i++) {
+            LCD.WriteLine(middleOptosensor.Value());
+        }
+
+        while (!LCD.Touch(&trashX, &trashY)) {}
+        while (LCD.Touch(&trashX, &trashY)) {}
+
+        LCD.WriteLine("Right optosensor voltages: ");
+        for (int i = 0; i < 5; i++) {
+            LCD.WriteLine(rightOptosensor.Value());
+        }
+
+        while (!LCD.Touch(&trashX, &trashY)) {}
+        while (LCD.Touch(&trashX, &trashY)) {}
+    }
+}
+
+// Constants from exploration 1
+// Left optosensor
+#define LEFT_RED 1.250
+#define LEFT_LIGHT_BACKGROUND 1.635
+#define LEFT_DARK_BACKGROUND 1.691
+#define LEFT_BLACK 2.293
+
+// Middle optosensor
+#define MID_RED 1.440
+#define MID_LIGHT_BACKGROUND 1.626
+#define MID_DARK_BACKGROUND 1.685
+#define MID_BLACK 2.358
+
+// Right optosensor
+#define RIGHT_RED 1.650
+#define RIGHT_LIGHT_BACKGROUND 1.912
+#define RIGHT_DARK_BACKGROUND 2.028
+#define RIGHT_BLACK 2.434
+
+// This margin is wider than necessary for easy detection on clear-contrast backgrounds
+#define MoE 0.100
+
+// Navigates the robot along the black line
+void FollowBlackLine(){
+
+    // Robot navigation state
+    bool leftOfLine = false;
+    bool rightOfLine = false;
+    bool onLine = false;
+
+    float leftVal, midVal, rightVal;
+
+    while(true) {
+        // Take values
+        leftVal = leftOptosensor.Value();
+        midVal = middleOptosensor.Value();
+        rightVal = rightOptosensor.Value();
+
+        // if left sees line, position = right of line
+        if (leftVal > LEFT_BLACK - MoE && leftVal < LEFT_BLACK + MoE) {
+            leftOfLine = false;
+            rightOfLine = true;
+            onLine = false;
+        }
+
+        // if right sees line, position = left of line
+        else if (rightVal > RIGHT_BLACK - MoE && rightVal < RIGHT_BLACK + MoE) {
+            leftOfLine = true;
+            rightOfLine = false;
+            onLine = false;
+        }
+
+        // if middle sees line, position = on line
+        else if (midVal > MID_BLACK - MoE && midVal < MID_BLACK + MoE) {
+            leftOfLine = false;
+            rightOfLine = false;
+            onLine = true;
+        }
+
+        if (onLine) {
+
+            LCD.WriteLine("On line");
+
+            leftMotor.SetPercent(15);
+            rightMotor.SetPercent(15);
+        } else if (rightOfLine) {
+
+            LCD.WriteLine("RightOfLine");
+
+            leftMotor.SetPercent(10);
+            rightMotor.SetPercent(30);
+        } else if (leftOfLine) {
+
+            LCD.WriteLine("LeftOfLine");
+
+            leftMotor.SetPercent(30);
+            rightMotor.SetPercent(10);
+        }
+    }
+}
+
+void FollowRedLine(){
+
+    bool leftOfLine = false;
+    bool rightOfLine = false;
+    bool onLine = false;
+
+    float leftVal, midVal, rightVal;
+
+    while(true) {
+        // Take values
+        leftVal = leftOptosensor.Value();
+        midVal = middleOptosensor.Value();
+        rightVal = rightOptosensor.Value();
+
+        // if left sees line, position = right of line
+        if (leftVal > LEFT_RED - MoE && leftVal < LEFT_RED + MoE) {
+            leftOfLine = false;
+            rightOfLine = true;
+            onLine = false;
+        }
+
+        // if right sees line, position = left of line
+        else if (rightVal > RIGHT_RED - MoE && rightVal < RIGHT_RED + MoE) {
+            leftOfLine = true;
+            rightOfLine = false;
+            onLine = false;
+        }
+
+        // if middle sees line, position = on line
+        else if (midVal > MID_RED - MoE && midVal < MID_RED + MoE) {
+            leftOfLine = false;
+            rightOfLine = false;
+            onLine = true;
+        }
+
+        if (onLine) {
+
+            LCD.WriteLine("On line");
+
+            leftMotor.SetPercent(25);
+            rightMotor.SetPercent(25);
+        } else if (rightOfLine) {
+
+            LCD.WriteLine("RightOfLine");
+
+            leftMotor.SetPercent(15);
+            rightMotor.SetPercent(25);
+        } else if (leftOfLine) {
+
+            LCD.WriteLine("LeftOfLine");
+
+            leftMotor.SetPercent(25);
+            rightMotor.SetPercent(15);
+        }
+    }
+}
+
+
+
+
 
 // MAIN FUNCTION
 int main(void)
 {
     // Consider calling servo.TouchCalibrate(); if this is the first run with servos
 
-    // Navigates the exploration 1 course
-    navigateExploration1Course();
+    FollowBlackLine();
 
     // Just a conventional best practice
     return 0;
