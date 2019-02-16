@@ -284,6 +284,7 @@ void FollowBlackLine(){
     }
 }
 
+// Makes the robot drive along the red line in Exploration 2
 void FollowRedLine(){
 
     bool leftOfLine = false;
@@ -342,14 +343,12 @@ void FollowRedLine(){
 }
 
 
-
-
-
 // MAIN FUNCTION
 int main(void)
 {
-    // Consider calling servo.TouchCalibrate(); if this is the first run with servos
+    // When using servos: Consider calling servo.TouchCalibrate(); if this is the first run with those servos
 
+    // Call desired function
     FollowBlackLine();
 
     // Just a conventional best practice
