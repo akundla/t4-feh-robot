@@ -342,6 +342,51 @@ void FollowRedLine(){
     }
 }
 
+// TODO: Confirm that the starting light turns red to signal start
+// Drives the robot from the starting position to the lever
+void DriveForwardOnStartLight (left_motor_percent, right_motor_percent) {
+
+    // Runs (burns time, makes robot wait) while the cdsCell detects light that is not in the voltage range of Red
+    while (cdsCell.Value() > RED_LIGHT_NO_FILTER_V_AVG + MoE || cdsCell.Value() < RED_LIGHT_NO_FILTER_V_AVG - MoE) {}
+
+    //Turn both motors on at given percent motor power.
+    leftMotor.SetPercent(left_motor_percent);
+    rightMotor.SetPercent(right_motor_percent);
+
+    // TODO: Input shaft encoding here or use bump switches
+
+    // Stops motors
+    leftMotor.Stop();
+    rightMotor.Stop();
+}
+
+// Drives the robot back from the lever to the start
+void DriveBackLeverToStart (left_motor_percent, right_motor_percent) {
+
+    //Turn both motors on at given percent motor power.
+    leftMotor.SetPercent(left_motor_percent);
+    rightMotor.SetPercent(right_motor_percent);
+
+    // TODO: Input shaft encoding here or use bump switches
+
+    // Stops motors
+    leftMotor.Stop();
+    rightMotor.Stop();
+}
+
+// Moves the arm with the servo to smack the lever down
+// TODO: Check angle
+void flipLever () {
+    servo.SetDegree(0);
+}
+
+// Navigates from the starting box to the lever, flips the lever, then drives back
+void performanceTestOne () {
+    DriveForwardOnStartLight();
+    flipLever();
+    DriveBackLeverToStart();
+}
+
 
 // MAIN FUNCTION
 int main(void)
@@ -349,7 +394,7 @@ int main(void)
     // When using servos: Consider calling servo.TouchCalibrate(); if this is the first run with those servos
 
     // Call desired function
-    FollowBlackLine();
+    performanceTestOne();
 
     // Just a conventional best practice
     return 0;
