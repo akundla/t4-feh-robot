@@ -1,2 +1,2 @@
-#include "light-detection-functions.cpp"
+#include "light-detection-functions.h"
 

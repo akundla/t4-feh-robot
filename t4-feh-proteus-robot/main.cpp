@@ -12,7 +12,7 @@
 
 // SENSORS
 //Declare a CdS Cell sensor as an analog input and assign it to an IO port
-AnalogInputPin cdsCell (FEHIO::P2_0);
+AnalogInputPin cdsCell (FEHIO::P0_0);
 
 /*
 //Declare a microswitch as a digital input and assign it to an IO port
@@ -27,8 +27,8 @@ AnalogInputPin rightOptosensor (FEHIO::P2_0);
 */
 
 // ENCODERS
-DigitalEncoder right_encoder(FEHIO::P0_0);
-DigitalEncoder left_encoder(FEHIO::P0_1);
+DigitalEncoder right_encoder(FEHIO::P1_0);
+DigitalEncoder left_encoder(FEHIO::P1_1);
 
 #define TICKS_PER_REV 48
 
@@ -154,6 +154,17 @@ void BackRightTurnUntilCornerHitWall()
 
 
 // LIGHT FUNCTIONS
+
+// Turns a servo motor in response to the reading from a CDS light cell
+void printCDsCellValues() {
+    // Runs continuously
+    while(true) {
+        //Print the value of the CdS cell to the screen.
+        LCD.Write("Voltage from CDS cell: ");
+        LCD.Write(cdsCell.Value());
+        LCD.Write("Volts");
+    }
+}
 
 // Turns a servo motor in response to the reading from a CDS light cell
 void moveServoToLight() {
@@ -504,7 +515,7 @@ int main(void)
     // When using servos: Consider calling servo.TouchCalibrate(); if this is the first run with those servos
 
     // Call desired function
-    performanceTestOne();
+    printCDsCellValues();
 
     // Just a conventional best practice
     return 0;
